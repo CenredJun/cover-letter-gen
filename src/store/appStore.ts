@@ -26,6 +26,7 @@ Viber: +639078181113
 https://www.linkedin.com/in/cenredjgonzales/
 Portfolio: https://cenredportfolio.bizguro.net/portfolio/
 Resume: https://drive.google.com/file/d/1OgtKpDMjiEwvuutvjWNuN7PdNj8kAQT2/view`,
+  specialInstructions: '',
 }
 
 // Lightweight unique id generator (no external deps).
@@ -77,6 +78,7 @@ export const useAppStore = create<AppState>()(
           skillsText: profile?.skillsText ?? '',
           portfolioUrl: profile?.portfolioUrl ?? '',
           contactBlock: profile?.contactBlock ?? '',
+          specialInstructions: profile?.specialInstructions ?? '',
         }
         set((state) => ({
           profiles: [...state.profiles, newProfile],

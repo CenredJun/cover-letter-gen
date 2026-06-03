@@ -15,6 +15,7 @@ const emptyDraft: Draft = {
   skillsText: '',
   portfolioUrl: '',
   contactBlock: '',
+  specialInstructions: '',
 }
 
 export default function ProfileManager({ onClose }: ProfileManagerProps) {
@@ -42,6 +43,7 @@ export default function ProfileManager({ onClose }: ProfileManagerProps) {
       skillsText: draft.skillsText,
       portfolioUrl: draft.portfolioUrl,
       contactBlock: draft.contactBlock,
+      specialInstructions: draft.specialInstructions,
     }
     if (draft.id) {
       updateProfile(draft.id, payload)
@@ -187,6 +189,24 @@ export default function ProfileManager({ onClose }: ProfileManagerProps) {
                   onChange={(e) => field('contactBlock', e.target.value)}
                   rows={6}
                   placeholder="Name, email, phone, LinkedIn, resume link"
+                  className="w-full resize-y rounded-md border border-gray-300 p-2 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                />
+              </div>
+
+              <div>
+                <label className="mb-1 block text-sm font-medium text-gray-600">
+                  Special instructions
+                </label>
+                <textarea
+                  value={draft.specialInstructions}
+                  onChange={(e) => field('specialInstructions', e.target.value)}
+                  rows={6}
+                  placeholder={`Additional rules for this profile. Examples:
+- Do not mention my previous employer by name
+- Emphasize I am seeking a long-term full-time role
+- I am open to relocation
+- Do not mention salary expectations
+- Emphasize my Philippine market experience`}
                   className="w-full resize-y rounded-md border border-gray-300 p-2 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
                 />
               </div>

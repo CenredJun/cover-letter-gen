@@ -5,6 +5,7 @@ export interface Profile {
   skillsText: string
   portfolioUrl: string
   contactBlock: string // name, email, phone, linkedin, resume link
+  specialInstructions: string
 }
 
 export interface JobInput {
