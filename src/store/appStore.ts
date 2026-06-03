@@ -1,0 +1,156 @@
+import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
+import type { HistoryEntry, JobInput, Profile, ToneOption } from '../types'
+
+const emptyJobInput: JobInput = {
+  jobTitle: '',
+  companyName: '',
+  addressTo: '',
+  platform: '',
+  companyOverview: '',
+  jobSummary: '',
+  responsibilities: '',
+  qualifications: '',
+  additionals: '',
+}
+
+const DEFAULT_PROFILE: Profile = {
+  id: 'default-ai-pm',
+  name: 'AI Automation & PM',
+  resumeText: 'Paste your resume and work experience here',
+  skillsText: 'Paste your skills list here',
+  portfolioUrl: 'https://cenredportfolio.bizguro.net/portfolio/',
+  contactBlock: `CENRED JUN GONZALES
+Email: cenredgonzales@gmail.com
+Viber: +639078181113
+https://www.linkedin.com/in/cenredjgonzales/
+Portfolio: https://cenredportfolio.bizguro.net/portfolio/
+Resume: https://drive.google.com/file/d/1OgtKpDMjiEwvuutvjWNuN7PdNj8kAQT2/view`,
+}
+
+// Lightweight unique id generator (no external deps).
+function generateId(): string {
+  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`
+}
+
+interface AppState {
+  profiles: Profile[]
+  activeProfileId: string | null
+  jobInput: JobInput
+  tone: ToneOption
+  history: HistoryEntry[]
+  isGenerating: boolean
+  output: string
+
+  addProfile: (profile?: Partial<Profile>) => string
+  updateProfile: (id: string, patch: Partial<Profile>) => void
+  deleteProfile: (id: string) => void
+  setActiveProfile: (id: string | null) => void
+
+  updateJobInput: (patch: Partial<JobInput>) => void
+  setTone: (tone: ToneOption) => void
+  setOutput: (output: string) => void
+  setIsGenerating: (isGenerating: boolean) => void
+
+  addToHistory: (entry: Omit<HistoryEntry, 'id' | 'createdAt'>) => void
+  clearHistory: () => void
+  deleteHistoryEntry: (id: string) => void
+}
+
+export const useAppStore = create<AppState>()(
+  persist(
+    (set) => ({
+      profiles: [],
+      activeProfileId: null,
+      jobInput: emptyJobInput,
+      tone: 'professional',
+      history: [],
+      isGenerating: false,
+      output: '',
+
+      addProfile: (profile) => {
+        const id = generateId()
+        const newProfile: Profile = {
+          id,
+          name: profile?.name ?? 'New Profile',
+          resumeText: profile?.resumeText ?? '',
+          skillsText: profile?.skillsText ?? '',
+          portfolioUrl: profile?.portfolioUrl ?? '',
+          contactBlock: profile?.contactBlock ?? '',
+        }
+        set((state) => ({
+          profiles: [...state.profiles, newProfile],
+          activeProfileId: state.activeProfileId ?? id,
+        }))
+        return id
+      },
+
+      updateProfile: (id, patch) =>
+        set((state) => ({
+          profiles: state.profiles.map((p) =>
+            p.id === id ? { ...p, ...patch } : p
+          ),
+        })),
+
+      deleteProfile: (id) =>
+        set((state) => {
+          const profiles = state.profiles.filter((p) => p.id !== id)
+          const activeProfileId =
+            state.activeProfileId === id
+              ? profiles[0]?.id ?? null
+              : state.activeProfileId
+          return { profiles, activeProfileId }
+        }),
+
+      setActiveProfile: (id) => set({ activeProfileId: id }),
+
+      updateJobInput: (patch) =>
+        set((state) => ({ jobInput: { ...state.jobInput, ...patch } })),
+
+      setTone: (tone) => set({ tone }),
+      setOutput: (output) => set({ output }),
+      setIsGenerating: (isGenerating) => set({ isGenerating }),
+
+      addToHistory: (entry) =>
+        set((state) => ({
+          history: [
+            {
+              ...entry,
+              id: generateId(),
+              createdAt: new Date().toISOString(),
+            },
+            ...state.history,
+          ],
+        })),
+
+      clearHistory: () => set({ history: [] }),
+
+      deleteHistoryEntry: (id) =>
+        set((state) => ({
+          history: state.history.filter((h) => h.id !== id),
+        })),
+    }),
+    {
+      name: 'cover-letter-gen',
+      // Only persist profiles, history, and activeProfileId.
+      partialize: (state) => ({
+        profiles: state.profiles,
+        history: state.history,
+        activeProfileId: state.activeProfileId,
+      }),
+    }
+  )
+)
+
+// Seed the default profile on first load if no profiles exist yet.
+export function seedDefaultProfile(): void {
+  const { profiles, setActiveProfile } = useAppStore.getState()
+  if (profiles.length === 0) {
+    useAppStore.setState({
+      profiles: [DEFAULT_PROFILE],
+      activeProfileId: DEFAULT_PROFILE.id,
+    })
+  } else if (!useAppStore.getState().activeProfileId) {
+    setActiveProfile(profiles[0].id)
+  }
+}
