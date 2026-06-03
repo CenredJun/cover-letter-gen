@@ -12,8 +12,9 @@ const emptyDraft: Draft = {
   id: null,
   name: '',
   resumeText: '',
-  skillsText: '',
+  toolsAndSkills: '',
   portfolioUrl: '',
+  portfolioProjects: '',
   contactBlock: '',
   specialInstructions: '',
 }
@@ -40,8 +41,9 @@ export default function ProfileManager({ onClose }: ProfileManagerProps) {
     const payload = {
       name: draft.name.trim() || 'Untitled Profile',
       resumeText: draft.resumeText,
-      skillsText: draft.skillsText,
+      toolsAndSkills: draft.toolsAndSkills,
       portfolioUrl: draft.portfolioUrl,
+      portfolioProjects: draft.portfolioProjects,
       contactBlock: draft.contactBlock,
       specialInstructions: draft.specialInstructions,
     }
@@ -158,11 +160,11 @@ export default function ProfileManager({ onClose }: ProfileManagerProps) {
 
               <div>
                 <label className="mb-1 block text-sm font-medium text-gray-600">
-                  Skills
+                  Tools &amp; Skills
                 </label>
                 <textarea
-                  value={draft.skillsText}
-                  onChange={(e) => field('skillsText', e.target.value)}
+                  value={draft.toolsAndSkills}
+                  onChange={(e) => field('toolsAndSkills', e.target.value)}
                   rows={4}
                   className="w-full resize-y rounded-md border border-gray-300 p-2 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
                 />
@@ -177,6 +179,19 @@ export default function ProfileManager({ onClose }: ProfileManagerProps) {
                   value={draft.portfolioUrl}
                   onChange={(e) => field('portfolioUrl', e.target.value)}
                   className="w-full rounded-md border border-gray-300 p-2 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                />
+              </div>
+
+              <div>
+                <label className="mb-1 block text-sm font-medium text-gray-600">
+                  Portfolio projects
+                </label>
+                <textarea
+                  value={draft.portfolioProjects}
+                  onChange={(e) => field('portfolioProjects', e.target.value)}
+                  rows={6}
+                  placeholder="List your key portfolio projects with titles, outcomes, and links. Claude will reference these when relevant to the job description."
+                  className="w-full resize-y rounded-md border border-gray-300 p-2 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
                 />
               </div>
 

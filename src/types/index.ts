@@ -2,8 +2,9 @@ export interface Profile {
   id: string
   name: string // e.g. "AI Automation Role", "PM Role"
   resumeText: string
-  skillsText: string
+  toolsAndSkills: string
   portfolioUrl: string
+  portfolioProjects: string
   contactBlock: string // name, email, phone, linkedin, resume link
   specialInstructions: string
 }

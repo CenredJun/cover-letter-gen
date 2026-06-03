@@ -18,8 +18,9 @@ const DEFAULT_PROFILE: Profile = {
   id: 'default-ai-pm',
   name: 'AI Automation & PM',
   resumeText: 'Paste your resume and work experience here',
-  skillsText: 'Paste your skills list here',
+  toolsAndSkills: 'Paste your skills list here',
   portfolioUrl: 'https://cenredportfolio.bizguro.net/portfolio/',
+  portfolioProjects: '',
   contactBlock: `CENRED JUN GONZALES
 Email: cenredgonzales@gmail.com
 Viber: +639078181113
@@ -75,8 +76,9 @@ export const useAppStore = create<AppState>()(
           id,
           name: profile?.name ?? 'New Profile',
           resumeText: profile?.resumeText ?? '',
-          skillsText: profile?.skillsText ?? '',
+          toolsAndSkills: profile?.toolsAndSkills ?? '',
           portfolioUrl: profile?.portfolioUrl ?? '',
+          portfolioProjects: profile?.portfolioProjects ?? '',
           contactBlock: profile?.contactBlock ?? '',
           specialInstructions: profile?.specialInstructions ?? '',
         }

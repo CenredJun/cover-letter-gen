@@ -39,6 +39,14 @@ ${profile.specialInstructions}
 `
       : ''
 
+  const portfolioProjectsSection =
+    profile.portfolioProjects.trim() !== ''
+      ? `
+---PORTFOLIO PROJECTS---
+${profile.portfolioProjects}
+`
+      : ''
+
   return `Write a customized cover letter using the following inputs. Follow these rules strictly:
 1. Emphasize keywords — skills, tools, qualifications, and responsibilities from the job description.
 2. Always match skills and experience from the resume. If something is missing, highlight transferable skills.
@@ -61,9 +69,9 @@ Name context: ${profile.name}
 Resume & Experience:
 ${profile.resumeText}
 
-Skills:
-${profile.skillsText}
-
+Tools & Skills:
+${profile.toolsAndSkills}
+${portfolioProjectsSection}
 Portfolio: ${profile.portfolioUrl}
 
 Contact block:
