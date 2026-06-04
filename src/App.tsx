@@ -1,10 +1,11 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useAppStore } from './store/appStore'
 import ProfileManager from './components/ProfileManager'
 import JobDescriptionInput from './components/JobDescriptionInput'
 import GeneratorControls from './components/GeneratorControls'
 import OutputPanel from './components/OutputPanel'
 import HistoryPanel from './components/HistoryPanel'
+import PasswordGate from './components/PasswordGate'
 
 export default function App() {
   const profiles = useAppStore((s) => s.profiles)
@@ -12,6 +13,17 @@ export default function App() {
   const setActiveProfile = useAppStore((s) => s.setActiveProfile)
 
   const [managerOpen, setManagerOpen] = useState(false)
+  const [unlocked, setUnlocked] = useState(false)
+
+  useEffect(() => {
+    if (sessionStorage.getItem('app_unlocked') === 'true') {
+      setUnlocked(true)
+    }
+  }, [])
+
+  if (!unlocked) {
+    return <PasswordGate onUnlock={() => setUnlocked(true)} />
+  }
 
   return (
     <div className="flex h-full min-h-screen flex-col bg-gray-100 md:flex-row">

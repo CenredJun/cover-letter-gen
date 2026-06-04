@@ -1,10 +1,15 @@
-import type { JobInput, Profile, ToneOption } from '../types'
+import type { JobInput, OutputMode, Profile, ToneOption } from '../types'
 
 const API_KEY = import.meta.env.VITE_CLAUDE_API_KEY as string | undefined
 const API_URL = 'https://api.anthropic.com/v1/messages'
 const MODEL = 'claude-sonnet-4-20250514'
 
 const SYSTEM_PROMPT = `You are an expert personal career coach with a strong ability to craft professional, ATS-optimized cover letters. You specialize in tailoring job descriptions to match a resume, highlighting relevant skills and experience while keeping the tone authentic and human-like.`
+
+const PITCH_SYSTEM_PROMPT = `You are an expert freelance proposal writer specializing in Upwork and freelance platform pitches.
+You write short, direct, human-sounding pitches that win clients.
+You never use formal cover letter structure. No 'Dear Hiring Manager'. No long paragraphs.
+You write like a confident specialist talking directly to a client.`
 
 interface AnthropicResponse {
   content?: Array<{ type: string; text?: string }>
@@ -89,6 +94,49 @@ Qualifications: ${job.qualifications}
 Additional notes: ${job.additionals}`
 }
 
+const PITCH_TONE_DESCRIPTIONS: Record<ToneOption, string> = {
+  professional: 'professional = clear and polished',
+  assertive: 'assertive = confident and direct',
+  warm: 'warm = friendly and enthusiastic',
+}
+
+function buildPitchPrompt(
+  profile: Profile,
+  job: JobInput,
+  tone: ToneOption
+): string {
+  const specialInstructionsLine =
+    profile.specialInstructions.trim() !== ''
+      ? `\nSpecial instructions: ${profile.specialInstructions}`
+      : ''
+
+  return `Write a short freelance pitch for the following job. Follow these rules strictly:
+1. Maximum 200 words. No exceptions.
+2. Open with 1 sentence showing you understand their specific problem — reference something concrete from the job description.
+3. Follow with 2-3 sentences showing you have done this exact thing before — reference 1-2 specific portfolio projects with outcomes and links.
+4. 1 sentence on your relevant tools/approach for this specific job.
+5. Close with 1 short confident sentence expressing enthusiasm and availability.
+6. NO formal greetings, NO "Dear", NO sign-off, NO contact block, NO date.
+7. Write in first person, conversational tone — like a human specialist, not a robot.
+8. If special instructions are provided, follow them strictly.
+9. Tone modifier: ${PITCH_TONE_DESCRIPTIONS[tone]}.
+
+---PROFILE---
+Name: ${profile.name}
+Experience summary: ${profile.resumeText.slice(0, 500)}
+Tools & Skills: ${profile.toolsAndSkills.slice(0, 300)}
+Portfolio projects: ${profile.portfolioProjects}${specialInstructionsLine}
+
+---JOB DETAILS---
+Job Title: ${job.jobTitle}
+Platform: ${job.platform}
+Company/Client: ${job.companyName}
+Job Summary: ${job.jobSummary}
+Responsibilities: ${job.responsibilities}
+Qualifications: ${job.qualifications}
+Additionals: ${job.additionals}`
+}
+
 async function callClaude(
   system: string,
   userContent: string,
@@ -147,13 +195,19 @@ async function callClaude(
 }
 
 /**
- * Generate a tailored cover letter from a profile, job input, and tone.
+ * Generate a tailored cover letter (or freelance pitch) from a profile,
+ * job input, tone, and output mode.
  */
 export async function generateCoverLetter(
   profile: Profile,
   job: JobInput,
-  tone: ToneOption
+  tone: ToneOption,
+  outputMode: OutputMode = 'cover_letter'
 ): Promise<string> {
+  if (outputMode === 'pitch') {
+    const pitchPrompt = buildPitchPrompt(profile, job, tone)
+    return callClaude(PITCH_SYSTEM_PROMPT, pitchPrompt, 2000)
+  }
   const userPrompt = buildUserPrompt(profile, job, tone)
   return callClaude(SYSTEM_PROMPT, userPrompt, 2000)
 }

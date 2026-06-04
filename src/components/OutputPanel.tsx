@@ -4,6 +4,7 @@ import { useAppStore } from '../store/appStore'
 export default function OutputPanel() {
   const output = useAppStore((s) => s.output)
   const jobInput = useAppStore((s) => s.jobInput)
+  const outputMode = useAppStore((s) => s.outputMode)
   const [copied, setCopied] = useState(false)
 
   async function handleCopy() {
@@ -37,7 +38,7 @@ export default function OutputPanel() {
   return (
     <section className="rounded-lg border border-gray-200 bg-white p-5 shadow-sm">
       <h2 className="mb-3 text-lg font-semibold text-gray-800">
-        3 &middot; Output
+        3 &middot; {outputMode === 'pitch' ? 'Pitch Output' : 'Output'}
       </h2>
 
       <textarea

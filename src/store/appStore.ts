@@ -1,6 +1,12 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { HistoryEntry, JobInput, Profile, ToneOption } from '../types'
+import type {
+  HistoryEntry,
+  JobInput,
+  OutputMode,
+  Profile,
+  ToneOption,
+} from '../types'
 
 const emptyJobInput: JobInput = {
   jobTitle: '',
@@ -40,6 +46,7 @@ interface AppState {
   activeProfileId: string | null
   jobInput: JobInput
   tone: ToneOption
+  outputMode: OutputMode
   history: HistoryEntry[]
   isGenerating: boolean
   output: string
@@ -51,6 +58,7 @@ interface AppState {
 
   updateJobInput: (patch: Partial<JobInput>) => void
   setTone: (tone: ToneOption) => void
+  setOutputMode: (mode: OutputMode) => void
   setOutput: (output: string) => void
   setIsGenerating: (isGenerating: boolean) => void
 
@@ -66,6 +74,7 @@ export const useAppStore = create<AppState>()(
       activeProfileId: null,
       jobInput: emptyJobInput,
       tone: 'professional',
+      outputMode: 'cover_letter',
       history: [],
       isGenerating: false,
       output: '',
@@ -112,6 +121,7 @@ export const useAppStore = create<AppState>()(
         set((state) => ({ jobInput: { ...state.jobInput, ...patch } })),
 
       setTone: (tone) => set({ tone }),
+      setOutputMode: (outputMode) => set({ outputMode }),
       setOutput: (output) => set({ output }),
       setIsGenerating: (isGenerating) => set({ isGenerating }),
 

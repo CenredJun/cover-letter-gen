@@ -48,8 +48,20 @@ export default function HistoryPanel() {
                 onClick={() => setOutput(entry.output)}
                 className="block w-full text-left"
               >
-                <span className="block truncate text-sm font-medium text-gray-100">
-                  {entry.jobTitle || 'Untitled role'}
+                <span className="flex items-center gap-1.5">
+                  <span className="min-w-0 flex-1 truncate text-sm font-medium text-gray-100">
+                    {entry.jobTitle || 'Untitled role'}
+                  </span>
+                  <span
+                    className={
+                      'shrink-0 rounded-full px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide ' +
+                      (entry.outputMode === 'pitch'
+                        ? 'bg-emerald-500/20 text-emerald-300'
+                        : 'bg-indigo-500/20 text-indigo-300')
+                    }
+                  >
+                    {entry.outputMode === 'pitch' ? 'Pitch' : 'CL'}
+                  </span>
                 </span>
                 <span className="block truncate text-xs text-gray-400">
                   {entry.companyName || 'Unknown company'}

@@ -23,6 +23,8 @@ export interface JobInput {
 
 export type ToneOption = 'professional' | 'assertive' | 'warm'
 
+export type OutputMode = 'cover_letter' | 'pitch'
+
 export interface HistoryEntry {
   id: string
   createdAt: string // ISO date string
@@ -30,5 +32,6 @@ export interface HistoryEntry {
   jobTitle: string
   companyName: string
   tone: ToneOption
+  outputMode: OutputMode
   output: string
 }

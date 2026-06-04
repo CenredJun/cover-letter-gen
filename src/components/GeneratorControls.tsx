@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useAppStore } from '../store/appStore'
 import { generateCoverLetter } from '../lib/claudeApi'
-import type { ToneOption } from '../types'
+import type { OutputMode, ToneOption } from '../types'
 
 const TONES: { value: ToneOption; label: string }[] = [
   { value: 'professional', label: 'Professional' },
@@ -9,9 +9,16 @@ const TONES: { value: ToneOption; label: string }[] = [
   { value: 'warm', label: 'Warm' },
 ]
 
+const OUTPUT_MODES: { value: OutputMode; label: string; subtitle?: string }[] = [
+  { value: 'cover_letter', label: 'Cover Letter' },
+  { value: 'pitch', label: 'Pitch', subtitle: 'For Upwork & freelance' },
+]
+
 export default function GeneratorControls() {
   const tone = useAppStore((s) => s.tone)
   const setTone = useAppStore((s) => s.setTone)
+  const outputMode = useAppStore((s) => s.outputMode)
+  const setOutputMode = useAppStore((s) => s.setOutputMode)
   const isGenerating = useAppStore((s) => s.isGenerating)
   const setIsGenerating = useAppStore((s) => s.setIsGenerating)
   const setOutput = useAppStore((s) => s.setOutput)
@@ -32,13 +39,19 @@ export default function GeneratorControls() {
     setIsGenerating(true)
     setOutput('')
     try {
-      const letter = await generateCoverLetter(profile, jobInput, tone)
+      const letter = await generateCoverLetter(
+        profile,
+        jobInput,
+        tone,
+        outputMode
+      )
       setOutput(letter)
       addToHistory({
         profileName: profile.name,
         jobTitle: jobInput.jobTitle,
         companyName: jobInput.companyName,
         tone,
+        outputMode,
         output: letter,
       })
     } catch (err) {
@@ -53,6 +66,42 @@ export default function GeneratorControls() {
       <h2 className="mb-3 text-lg font-semibold text-gray-800">
         2 &middot; Controls
       </h2>
+
+      <div className="mb-4">
+        <span className="mb-2 block text-sm font-medium text-gray-600">
+          Output type
+        </span>
+        <div className="flex flex-wrap gap-2">
+          {OUTPUT_MODES.map((m) => {
+            const active = outputMode === m.value
+            return (
+              <button
+                key={m.value}
+                type="button"
+                onClick={() => setOutputMode(m.value)}
+                className={
+                  'rounded-full px-4 py-1.5 text-sm font-medium transition ' +
+                  (active
+                    ? 'bg-indigo-600 text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200')
+                }
+              >
+                <span className="block leading-tight">{m.label}</span>
+                {m.subtitle && (
+                  <span
+                    className={
+                      'block text-[11px] leading-tight ' +
+                      (active ? 'text-indigo-100' : 'text-gray-500')
+                    }
+                  >
+                    {m.subtitle}
+                  </span>
+                )}
+              </button>
+            )
+          })}
+        </div>
+      </div>
 
       <div className="mb-4">
         <span className="mb-2 block text-sm font-medium text-gray-600">
@@ -89,7 +138,11 @@ export default function GeneratorControls() {
         {isGenerating && (
           <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
         )}
-        {isGenerating ? 'Generating…' : 'Generate Cover Letter'}
+        {isGenerating
+          ? 'Generating…'
+          : outputMode === 'pitch'
+            ? 'Generate Pitch'
+            : 'Generate Cover Letter'}
       </button>
 
       {error && <p className="mt-3 text-sm text-red-600">{error}</p>}
