@@ -2,7 +2,7 @@ import type { JobInput, OutputMode, Profile, ToneOption } from '../types'
 
 const API_KEY = import.meta.env.VITE_CLAUDE_API_KEY as string | undefined
 const API_URL = 'https://api.anthropic.com/v1/messages'
-const MODEL = 'claude-sonnet-4-20250514'
+const MODEL = 'claude-sonnet-4-5'
 
 const SYSTEM_PROMPT = `You are an expert personal career coach with a strong ability to craft professional, ATS-optimized cover letters. You specialize in tailoring job descriptions to match a resume, highlighting relevant skills and experience while keeping the tone authentic and human-like.`
 
